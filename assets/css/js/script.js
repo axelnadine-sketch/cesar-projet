@@ -213,81 +213,59 @@
         localStorage.setItem('welcomed', '1');
       }
     })();
-    // Gestion du formulaire de contact (simulation)
+    // ==========================================
+// Gestion du formulaire de contact (sécurisé)
+// ==========================================
 
-    // Gestion du formulaire de contact (envoi réel)
 const form = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
 
 if (form) {
-  // Anti-spam : honeypot 19h23 ajouté par moi 
-const honeypot = form.querySelector('#company');
-if (honeypot && honeypot.value !== '') {
-  return; // Bot détecté → on stoppe silencieusement
-}
-// Anti-spam niveau 2 : limitation d’envoi (cooldown)
-const COOLDOWN_SECONDS = 60;
-const lastSent = localStorage.getItem('lastFormSent');
-const now = Date.now();
-
-if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
-  formMessage.style.display = 'block';
-  formMessage.style.color = 'var(--warn)';
-  const wait = Math.ceil((COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000);
-  formMessage.textContent = `Merci d’attendre ${wait}s avant un nouvel envoi.`;
-  return;
-}
-
   form.addEventListener('submit', async function (e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  // 1️⃣ Anti-spam niveau 1 : honeypot
-  const honeypot = form.querySelector('#company');
-  if (honeypot && honeypot.value !== '') {
-    return;
-  }
+    // 1️⃣ Anti-spam niveau 1 : honeypot
+    const honeypot = form.querySelector('#company');
+    if (honeypot && honeypot.value !== '') {
+      return; // bot détecté
+    }
 
-  // 2️⃣ Anti-spam niveau 2 : cooldown
-  const COOLDOWN_SECONDS = 60;
-  const lastSent = localStorage.getItem('lastFormSent');
-  const now = Date.now();
+    // 2️⃣ Anti-spam niveau 2 : limitation d’envoi
+    const COOLDOWN_SECONDS = 60;
+    const lastSent = localStorage.getItem('lastFormSent');
+    const now = Date.now();
 
-  if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
-  formMessage.style.display = 'block';
-  formMessage.style.color = 'var(--warn)';
+    if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
+      const wait = Math.ceil(
+        (COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000
+      );
 
-  const wait = Math.ceil(
-    (COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000
-  );
+      formMessage.style.display = 'block';
+      formMessage.style.color = 'var(--warn)';
+      formMessage.textContent = `Merci d’attendre ${wait}s avant un nouvel envoi.`;
+      return;
+    }
 
-  formMessage.textContent = `Merci d'attendre ${wait}s avant un nouvel envoi.`;
-  return;
-}
+    // 3️⃣ Envoi réel du formulaire
+    const response = await fetch(form.action, {
+      method: form.method,
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    });
 
+    // 4️⃣ Succès
+    if (response.ok) {
+      localStorage.setItem('lastFormSent', Date.now().toString());
 
-  // 3️⃣ Envoi réel du formulaire
-  const response = await fetch(form.action, {
-    method: form.method,
-    body: new FormData(form),
-    headers: { 'Accept': 'application/json' }
+      formMessage.style.display = 'block';
+      formMessage.style.color = 'var(--good)';
+      formMessage.textContent = 'Message envoyé avec succès. Merci !';
+
+      form.reset();
+    } else {
+      formMessage.style.display = 'block';
+      formMessage.style.color = 'var(--danger)';
+      formMessage.textContent = 'Erreur lors de l’envoi.';
+    }
   });
-
-  // 4️⃣ Succès
-  if (response.ok) {
-    // ⬅️ C’EST ICI qu’on met le localStorage
-    localStorage.setItem('lastFormSent', Date.now().toString());
-
-    formMessage.style.display = 'block';
-    formMessage.style.color = 'var(--good)';
-    formMessage.textContent = 'Message envoyé avec succès. Merci !';
-
-    form.reset();
-  } else {
-    formMessage.style.display = 'block';
-    formMessage.style.color = 'var(--danger)';
-    formMessage.textContent = 'Erreur lors de l’envoi.';
-  }
-});
-
-
-
+}
