@@ -215,18 +215,31 @@
     })();
     // Gestion du formulaire de contact (simulation)
 
-    const form = document.getElementById('contactForm');
+    // Gestion du formulaire de contact (envoi réel)
+const form = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
 
 if (form) {
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    formMessage.style.display = 'block';
-    formMessage.style.color = 'var(--good)';
-    formMessage.textContent = 'Message envoyé (simulation). Merci !';
+    const response = await fetch(form.action, {
+      method: form.method,
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    });
 
-    form.reset();
+    if (response.ok) {
+      formMessage.style.display = 'block';
+      formMessage.style.color = 'var(--good)';
+      formMessage.textContent = 'Message envoyé avec succès. Merci !';
+      form.reset();
+    } else {
+      formMessage.style.display = 'block';
+      formMessage.style.color = 'var(--danger)';
+      formMessage.textContent = 'Erreur lors de l’envoi. Réessaie plus tard.';
+    }
   });
 }
+
 
