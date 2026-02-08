@@ -225,6 +225,18 @@ const honeypot = form.querySelector('#company');
 if (honeypot && honeypot.value !== '') {
   return; // Bot détecté → on stoppe silencieusement
 }
+// Anti-spam niveau 2 : limitation d’envoi (cooldown)
+const COOLDOWN_SECONDS = 60;
+const lastSent = localStorage.getItem('lastFormSent');
+const now = Date.now();
+
+if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
+  formMessage.style.display = 'block';
+  formMessage.style.color = 'var(--warn)';
+  const wait = Math.ceil((COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000);
+  formMessage.textContent = `Merci d’attendre ${wait}s avant un nouvel envoi.`;
+  return;
+}
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
