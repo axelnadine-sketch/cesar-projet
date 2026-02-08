@@ -239,25 +239,52 @@ if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
 }
 
   form.addEventListener('submit', async function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const response = await fetch(form.action, {
-      method: form.method,
-      body: new FormData(form),
-      headers: { 'Accept': 'application/json' }
-    });
+  // 1️⃣ Anti-spam niveau 1 : honeypot
+  const honeypot = form.querySelector('#company');
+  if (honeypot && honeypot.value !== '') {
+    return;
+  }
 
-    if (response.ok) {
-      formMessage.style.display = 'block';
-      formMessage.style.color = 'var(--good)';
-      formMessage.textContent = 'Message envoyé avec succès. Merci !';
-      form.reset();
-    } else {
-      formMessage.style.display = 'block';
-      formMessage.style.color = 'var(--danger)';
-      formMessage.textContent = 'Erreur lors de l’envoi. Réessaie plus tard.';
-    }
+  // 2️⃣ Anti-spam niveau 2 : cooldown
+  const COOLDOWN_SECONDS = 60;
+  const lastSent = localStorage.getItem('lastFormSent');
+  const now = Date.now();
+
+  if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
+    formMessage.style.display = 'block';
+    formMessage.style.color = 'var(--warn)';
+    const wait = Math.ceil(
+      (COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000
+    );
+    formMessage.textContent = `Merci d’attendre ${wait}s avant un nouvel envoi.`;
+    return;
+  }
+
+  // 3️⃣ Envoi réel du formulaire
+  const response = await fetch(form.action, {
+    method: form.method,
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' }
   });
-}
+
+  // 4️⃣ Succès
+  if (response.ok) {
+    // ⬅️ C’EST ICI qu’on met le localStorage
+    localStorage.setItem('lastFormSent', Date.now().toString());
+
+    formMessage.style.display = 'block';
+    formMessage.style.color = 'var(--good)';
+    formMessage.textContent = 'Message envoyé avec succès. Merci !';
+
+    form.reset();
+  } else {
+    formMessage.style.display = 'block';
+    formMessage.style.color = 'var(--danger)';
+    formMessage.textContent = 'Erreur lors de l’envoi.';
+  }
+});
+
 
 
