@@ -214,54 +214,68 @@
       }
     })();
     // ==========================================
-// Gestion du formulaire de contact (sécurisé)
+// Formulaire sécurisé (anti-spam PRO)
 // ==========================================
 
 const form = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
+const submitBtn = document.getElementById('submitBtn');
+
+const COOLDOWN_SECONDS = 60;
+
+function isCooldownActive() {
+  const lastSent = localStorage.getItem('lastFormSent');
+  if (!lastSent) return false;
+  return (Date.now() - Number(lastSent)) < COOLDOWN_SECONDS * 1000;
+}
+
+function updateButtonState() {
+  if (isCooldownActive()) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Veuillez patienter…';
+  } else {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Envoyer';
+  }
+}
 
 if (form) {
+  updateButtonState();
+
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    // 1️⃣ Anti-spam niveau 1 : honeypot
+    // Honeypot
     const honeypot = form.querySelector('#company');
     if (honeypot && honeypot.value !== '') {
-      return; // bot détecté
+      return;
     }
 
-    // 2️⃣ Anti-spam niveau 2 : limitation d’envoi
-    const COOLDOWN_SECONDS = 60;
-    const lastSent = localStorage.getItem('lastFormSent');
-    const now = Date.now();
-
-    if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
+    // Cooldown bloquant
+    if (isCooldownActive()) {
       const wait = Math.ceil(
-        (COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000
+        (COOLDOWN_SECONDS * 1000 - (Date.now() - Number(localStorage.getItem('lastFormSent')))) / 1000
       );
-
       formMessage.style.display = 'block';
       formMessage.style.color = 'var(--warn)';
       formMessage.textContent = `Merci d’attendre ${wait}s avant un nouvel envoi.`;
       return;
     }
 
-    // 3️⃣ Envoi réel du formulaire
     const response = await fetch(form.action, {
       method: form.method,
       body: new FormData(form),
       headers: { 'Accept': 'application/json' }
     });
 
-    // 4️⃣ Succès
     if (response.ok) {
       localStorage.setItem('lastFormSent', Date.now().toString());
-
       formMessage.style.display = 'block';
       formMessage.style.color = 'var(--good)';
       formMessage.textContent = 'Message envoyé avec succès. Merci !';
-
       form.reset();
+      updateButtonState();
+      setTimeout(updateButtonState, COOLDOWN_SECONDS * 1000);
     } else {
       formMessage.style.display = 'block';
       formMessage.style.color = 'var(--danger)';
