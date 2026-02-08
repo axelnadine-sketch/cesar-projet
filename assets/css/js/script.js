@@ -253,14 +253,17 @@ if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
   const now = Date.now();
 
   if (lastSent && (now - Number(lastSent)) < COOLDOWN_SECONDS * 1000) {
-    formMessage.style.display = 'block';
-    formMessage.style.color = 'var(--warn)';
-    const wait = Math.ceil(
-      (COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000
-    );
-    formMessage.textContent = `Merci d’attendre ${wait}s avant un nouvel envoi.`;
-    return;
-  }
+  formMessage.style.display = 'block';
+  formMessage.style.color = 'var(--warn)';
+
+  const wait = Math.ceil(
+    (COOLDOWN_SECONDS * 1000 - (now - Number(lastSent))) / 1000
+  );
+
+  formMessage.textContent = `Merci d'attendre ${wait}s avant un nouvel envoi.`;
+  return;
+}
+
 
   // 3️⃣ Envoi réel du formulaire
   const response = await fetch(form.action, {
