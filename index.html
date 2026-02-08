@@ -1,1 +1,809 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mon premier projet GitHub — CZR</title>
+  <meta name="description" content="Page démo HTML/CSS/JS moderne, interactive, prête pour GitHub Pages." />
+  <style>
+    :root{
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,0.06);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --stroke: rgba(255,255,255,0.12);
+      --shadow: 0 16px 60px rgba(0,0,0,0.45);
+      --radius: 18px;
+      --accent: #7c5cff;
+      --accent2: #00d4ff;
+      --good: #3ddc97;
+      --warn: #ffcc66;
+      --danger: #ff5c7c;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    /* Thème clair */
+    [data-theme="light"]{
+      --bg: #f6f7fb;
+      --panel: rgba(0,0,0,0.04);
+      --text: rgba(0,0,0,0.88);
+      --muted: rgba(0,0,0,0.62);
+      --stroke: rgba(0,0,0,0.10);
+      --shadow: 0 16px 60px rgba(0,0,0,0.12);
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height: 100%; }
+    body{
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(900px 600px at 20% 10%, rgba(124,92,255,0.25), transparent 55%),
+        radial-gradient(900px 600px at 80% 30%, rgba(0,212,255,0.18), transparent 60%),
+        radial-gradient(900px 600px at 50% 95%, rgba(61,220,151,0.12), transparent 55%),
+        var(--bg);
+      line-height: 1.5;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    /* Header */
+    header{
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 14px 18px;
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--panel), transparent);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 12px;
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 220px;
+    }
+    .logo{
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: conic-gradient(from 200deg, var(--accent), var(--accent2), var(--good), var(--accent));
+      box-shadow: 0 10px 30px rgba(124,92,255,0.25);
+      border: 1px solid var(--stroke);
+    }
+    .brand h1{
+      font-size: 14px;
+      margin: 0;
+      letter-spacing: 0.2px;
+    }
+    .brand p{
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn{
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease;
+      user-select: none;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(124,92,255,0.45); }
+    .btn:active{ transform: translateY(0px) scale(0.99); opacity: 0.95; }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(124,92,255,0.95), rgba(0,212,255,0.80));
+      border-color: rgba(255,255,255,0.2);
+      color: white;
+      box-shadow: 0 14px 50px rgba(124,92,255,0.28);
+    }
+    .btn.ghost{
+      background: transparent;
+    }
+
+    .kbd{
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 1px solid var(--stroke);
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* Hero */
+    .hero{
+      display:grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items: stretch;
+    }
+    @media (max-width: 920px){
+      .hero{ grid-template-columns: 1fr; }
+      header{ position: static; }
+      .brand{ min-width: unset; }
+    }
+
+    .card{
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--panel), rgba(255,255,255,0.02));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card .pad{ padding: 18px; }
+
+    .headline{
+      font-size: 34px;
+      line-height: 1.15;
+      margin: 0 0 10px;
+      letter-spacing: -0.4px;
+    }
+
+    .sub{
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 62ch;
+    }
+
+    .pillRow{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 0;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(124,92,255,0.15);
+    }
+
+    .heroMedia{
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* "Image" : SVG intégré */
+    .svgWrap{
+      border-top: 1px solid var(--stroke);
+      background: radial-gradient(100% 100% at 50% 0%, rgba(124,92,255,0.18), transparent 60%);
+      padding: 16px 16px 6px;
+    }
+    .svgWrap svg{
+      width: 100%;
+      height: auto;
+      display:block;
+      filter: drop-shadow(0 20px 50px rgba(0,0,0,0.35));
+    }
+
+    .mini{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 520px){
+      .mini{ grid-template-columns: 1fr; }
+    }
+
+    .stat{
+      padding: 14px;
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+    }
+    .stat h3{
+      margin: 0 0 6px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+    .stat .big{
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .stat .small{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Section outils */
+    .section{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .toolbar{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .search{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      border-radius: 16px;
+      padding: 10px 12px;
+      min-width: min(520px, 100%);
+      flex: 1;
+    }
+    .search input{
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .filters{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .chip{
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color .15s ease, transform .15s ease;
+      user-select:none;
+    }
+    .chip:hover{ transform: translateY(-1px); border-color: rgba(0,212,255,0.35); }
+    .chip[aria-pressed="true"]{
+      color: var(--text);
+      border-color: rgba(124,92,255,0.55);
+      box-shadow: 0 0 0 4px rgba(124,92,255,0.12);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 920px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .item{
+      padding: 14px;
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 180px;
+      position: relative;
+      overflow:hidden;
+    }
+    .tag{
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--muted);
+      display:inline-flex;
+      gap: 8px;
+      align-items:center;
+    }
+    .badge{
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+    }
+    .item h4{
+      margin: 2px 0 0;
+      font-size: 16px;
+      letter-spacing: -0.2px;
+    }
+    .item p{
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 60ch;
+    }
+    .item .row{
+      margin-top: auto;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+    }
+    .bar{
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.04);
+      overflow:hidden;
+      flex: 1;
+      min-width: 180px;
+    }
+    .fill{
+      height: 100%;
+      width: 30%;
+      background: linear-gradient(90deg, rgba(124,92,255,0.95), rgba(0,212,255,0.85));
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+
+    .foot{
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      max-width: 360px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.55);
+      color: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      transform: translateY(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    [data-theme="light"] .toast{ background: rgba(255,255,255,0.75); color: rgba(0,0,0,0.86); }
+    .toast.show{ opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .toast .tTitle{ font-weight: 800; font-size: 13px; margin-bottom: 2px; }
+    .toast .tText{ font-size: 12px; color: var(--muted); }
+    .toast .tIcon{
+      width: 26px; height: 26px; border-radius: 10px;
+      background: rgba(124,92,255,0.22);
+      border: 1px solid var(--stroke);
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+
+    /* Focus visible */
+    :focus-visible{
+      outline: 3px solid rgba(0,212,255,0.35);
+      outline-offset: 2px;
+      border-radius: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap" data-app>
+    <header aria-label="Barre du projet">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Premier pas GitHub — Démo Front</h1>
+          <p>HTML · CSS · JavaScript — prêt pour GitHub Pages</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="btnTheme" type="button" aria-label="Changer le thème">
+          Thème <span class="kbd">T</span>
+        </button>
+        <button class="btn" id="btnCopy" type="button" aria-label="Copier le lien du projet">
+          Copier <span class="kbd">C</span>
+        </button>
+        <button class="btn primary" id="btnAction" type="button">
+          Tester l’interactivité
+        </button>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="Présentation">
+      <article class="card">
+        <div class="pad">
+          <h2 class="headline">Une page moderne et interactive pour ton premier dépôt GitHub</h2>
+          <p class="sub">
+            Objectif : te donner une base propre et motivante.
+            Tu peux publier cette page sur GitHub Pages, puis l’améliorer petit à petit
+            (composants, formulaires, API, automatisations).
+          </p>
+
+          <div class="pillRow">
+            <span class="pill"><span class="dot" aria-hidden="true"></span> Mode clair/sombre (localStorage)</span>
+            <span class="pill"><span class="dot" aria-hidden="true" style="background: var(--accent2)"></span> Filtre + recherche instantanée</span>
+            <span class="pill"><span class="dot" aria-hidden="true" style="background: var(--good)"></span> Progress + compteur + toast</span>
+          </div>
+        </div>
+
+        <div class="svgWrap" aria-label="Illustration">
+          <!-- SVG intégré : aucune image externe nécessaire -->
+          <svg viewBox="0 0 900 360" role="img" aria-label="Illustration abstraite pour un projet GitHub">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="rgba(124,92,255,0.95)"/>
+                <stop offset="1" stop-color="rgba(0,212,255,0.85)"/>
+              </linearGradient>
+              <linearGradient id="g2" x1="1" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="rgba(61,220,151,0.90)"/>
+                <stop offset="1" stop-color="rgba(124,92,255,0.40)"/>
+              </linearGradient>
+              <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="14"/>
+              </filter>
+            </defs>
+
+            <rect x="0" y="0" width="900" height="360" rx="26" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.10)"/>
+            <circle cx="240" cy="120" r="90" fill="url(#g1)" filter="url(#blur)" opacity="0.85"/>
+            <circle cx="640" cy="110" r="110" fill="url(#g2)" filter="url(#blur)" opacity="0.70"/>
+            <circle cx="520" cy="250" r="130" fill="rgba(0,212,255,0.18)" filter="url(#blur)" />
+
+            <g fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2">
+              <path d="M90 260 C180 210, 250 290, 360 250 S 560 210, 700 255 S 820 300, 860 245" />
+              <path d="M110 220 C210 170, 260 260, 370 215 S 550 170, 690 225 S 820 270, 860 210" opacity="0.6" />
+            </g>
+
+            <g font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace" fill="rgba(255,255,255,0.82)">
+              <text x="70" y="110" font-size="22" font-weight="700">repo: czr-first-page</text>
+              <text x="70" y="140" font-size="14" fill="rgba(255,255,255,0.65)">index.html • styles • scripts • pages</text>
+              <text x="70" y="200" font-size="14" fill="rgba(255,255,255,0.65)">build: no framework • deploy: GitHub Pages</text>
+            </g>
+
+            <g>
+              <rect x="70" y="240" width="260" height="56" rx="16" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)"/>
+              <text x="92" y="274" font-size="14" fill="rgba(255,255,255,0.80)">commit → push → deploy</text>
+              <circle cx="300" cy="268" r="8" fill="rgba(61,220,151,0.9)"/>
+            </g>
+          </svg>
+        </div>
+      </article>
+
+      <aside class="heroMedia">
+        <div class="card">
+          <div class="pad">
+            <div class="mini">
+              <div class="stat" aria-label="Compteur de clics">
+                <h3>Clics</h3>
+                <div class="big"><span id="clicks">0</span></div>
+                <div class="small">Clique sur “Tester l’interactivité”</div>
+              </div>
+              <div class="stat" aria-label="Score">
+                <h3>Progression</h3>
+                <div class="big"><span id="score">15</span>%</div>
+                <div class="small">Monte jusqu’à 100% en testant</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="pad">
+            <h3 style="margin:0 0 10px; font-size:16px;">Objectifs de test</h3>
+            <p style="margin:0; color:var(--muted); font-size:13px;">
+              1) Change le thème. 2) Utilise la recherche + filtres. 3) Copie le lien.
+              4) Lance l’action pour voir la barre progresser.
+            </p>
+            <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+              <span class="badge">Accessibilité</span>
+              <span class="badge">Responsive</span>
+              <span class="badge">LocalStorage</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section card" aria-label="Catalogue interactif">
+      <div class="pad">
+        <div class="toolbar">
+          <div class="search" role="search" aria-label="Recherche">
+            <span aria-hidden="true" style="opacity:.8">🔎</span>
+            <input id="q" type="search" placeholder="Rechercher : WordPress, SEO, VPS, n8n, IA…" autocomplete="off" />
+            <span class="kbd">/</span>
+          </div>
+
+          <div class="filters" aria-label="Filtres">
+            <button class="chip" data-filter="all" aria-pressed="true" type="button">Tout</button>
+            <button class="chip" data-filter="web" aria-pressed="false" type="button">Web</button>
+            <button class="chip" data-filter="ops" aria-pressed="false" type="button">VPS</button>
+            <button class="chip" data-filter="auto" aria-pressed="false" type="button">n8n</button>
+            <button class="chip" data-filter="ai" aria-pressed="false" type="button">IA</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="grid" id="grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <p class="foot">
+      Raccourcis : <span class="kbd">T</span> thème · <span class="kbd">/</span> focus recherche · <span class="kbd">C</span> copier
+    </p>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
+      <div class="tIcon" aria-hidden="true">✓</div>
+      <div>
+        <div class="tTitle" id="toastTitle">OK</div>
+        <div class="tText" id="toastText">Action effectuée.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const app = document.querySelector('[data-app]');
+      const btnTheme = document.getElementById('btnTheme');
+      const btnCopy = document.getElementById('btnCopy');
+      const btnAction = document.getElementById('btnAction');
+      const clicksEl = document.getElementById('clicks');
+      const scoreEl = document.getElementById('score');
+      const q = document.getElementById('q');
+      const grid = document.getElementById('grid');
+
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastText = document.getElementById('toastText');
+      let toastTimer = null;
+
+      const state = {
+        theme: localStorage.getItem('theme') || 'dark',
+        clicks: Number(localStorage.getItem('clicks') || 0),
+        score: Number(localStorage.getItem('score') || 15),
+        filter: 'all',
+        query: ''
+      };
+
+      const items = [
+        { id: 1, cat: 'web', title: 'WordPress — page d’accueil propre', desc: 'Structure, blocs, typographie, CTA. Base solide pour un site pro.', level: 25 },
+        { id: 2, cat: 'auto', title: 'n8n — premier workflow utile', desc: 'Déclencheur + filtre + action + logs. Comprendre la logique de l’automatisation.', level: 35 },
+        { id: 3, cat: 'ops', title: 'VPS — dossier de projet propre', desc: 'Organisation /srv, logs, variables, services. Le réflexe “pro”.', level: 45 },
+        { id: 4, cat: 'ai',  title: 'IA — prompt simple mais efficace', desc: 'Objectif, contexte, contraintes, format de sortie. Réutilisable.', level: 30 },
+        { id: 5, cat: 'web', title: 'SEO — checklist rapide', desc: 'Titles, meta, Hn, maillage interne, vitesse, indexation.', level: 40 },
+        { id: 6, cat: 'ai',  title: 'IA — micro-agent (simulation)', desc: 'Décomposer une tâche en étapes. Résultat clair + actions.', level: 55 },
+      ];
+
+      function showToast(title, text){
+        toastTitle.textContent = title;
+        toastText.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2100);
+      }
+
+      function applyTheme(){
+        document.documentElement.setAttribute('data-theme', state.theme);
+        localStorage.setItem('theme', state.theme);
+      }
+
+      function setScore(next){
+        state.score = Math.max(0, Math.min(100, next));
+        scoreEl.textContent = state.score.toString();
+        localStorage.setItem('score', state.score.toString());
+      }
+
+      function setClicks(next){
+        state.clicks = next;
+        clicksEl.textContent = state.clicks.toString();
+        localStorage.setItem('clicks', state.clicks.toString());
+      }
+
+      function activeChip(value){
+        document.querySelectorAll('.chip').forEach(ch => {
+          const on = ch.dataset.filter === value;
+          ch.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+      }
+
+      function matches(item){
+        const byCat = (state.filter === 'all') || (item.cat === state.filter);
+        const needle = state.query.trim().toLowerCase();
+        if(!needle) return byCat;
+        const hay = (item.title + ' ' + item.desc).toLowerCase();
+        return byCat && hay.includes(needle);
+      }
+
+      function render(){
+        const filtered = items.filter(matches);
+        grid.innerHTML = '';
+        if(filtered.length === 0){
+          const empty = document.createElement('div');
+          empty.className = 'item';
+          empty.innerHTML = `
+            <div class="tag"><span class="badge">Aucun résultat</span></div>
+            <h4>Essaie une autre recherche</h4>
+            <p>Astuce : tape “VPS”, “WordPress”, “n8n” ou “IA”.</p>
+            <div class="row">
+              <button class="btn" type="button" id="resetBtn">Réinitialiser</button>
+            </div>
+          `;
+          grid.appendChild(empty);
+          empty.querySelector('#resetBtn').addEventListener('click', () => {
+            state.query = '';
+            q.value = '';
+            state.filter = 'all';
+            activeChip('all');
+            render();
+            showToast('Réinitialisé', 'Filtres et recherche remis à zéro.');
+          });
+          return;
+        }
+
+        for(const it of filtered){
+          const el = document.createElement('article');
+          el.className = 'item';
+          el.setAttribute('data-cat', it.cat);
+
+          const badgeLabel =
+            it.cat === 'web' ? 'WEB' :
+            it.cat === 'ops' ? 'VPS' :
+            it.cat === 'auto' ? 'N8N' :
+            'IA';
+
+          el.innerHTML = `
+            <div class="tag">
+              <span class="badge">${badgeLabel}</span>
+              <span>id:${it.id.toString().padStart(2,'0')}</span>
+            </div>
+            <h4>${it.title}</h4>
+            <p>${it.desc}</p>
+            <div class="row">
+              <div class="bar" aria-label="Progression de l’item">
+                <div class="fill" style="width:${Math.min(100, Math.max(8, it.level))}%"></div>
+              </div>
+              <button class="btn" type="button" data-boost="${it.level}">
+                Booster
+              </button>
+            </div>
+          `;
+
+          el.querySelector('button[data-boost]').addEventListener('click', (e) => {
+            const gain = Number(e.currentTarget.getAttribute('data-boost')) || 10;
+            setScore(state.score + Math.round(gain / 10));
+            setClicks(state.clicks + 1);
+            showToast('Boost', `+${Math.round(gain/10)}% de progression.`);
+          });
+
+          grid.appendChild(el);
+        }
+      }
+
+      async function copyLink(){
+        const text = window.location.href;
+        try{
+          await navigator.clipboard.writeText(text);
+          showToast('Copié', 'Lien copié dans le presse-papiers.');
+        }catch{
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast('Copié', 'Lien copié (mode compatibilité).');
+        }
+      }
+
+      function toggleTheme(){
+        state.theme = (state.theme === 'dark') ? 'light' : 'dark';
+        applyTheme();
+        showToast('Thème', state.theme === 'dark' ? 'Mode sombre activé.' : 'Mode clair activé.');
+      }
+
+      function action(){
+        // petite animation + progression
+        setClicks(state.clicks + 1);
+        const bump = Math.max(3, Math.min(12, 100 - state.score));
+        setScore(state.score + bump);
+        showToast('Interactivité', `Progression +${bump}%. Continue.`);
+      }
+
+      // Events
+      btnTheme.addEventListener('click', toggleTheme);
+      btnCopy.addEventListener('click', copyLink);
+      btnAction.addEventListener('click', action);
+
+      q.addEventListener('input', () => {
+        state.query = q.value;
+        render();
+      });
+
+      document.querySelectorAll('.chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          state.filter = ch.dataset.filter;
+          activeChip(state.filter);
+          render();
+        });
+      });
+
+      // Raccourcis clavier
+      window.addEventListener('keydown', (e) => {
+        if(e.key === 't' || e.key === 'T'){ toggleTheme(); }
+        if(e.key === '/'){
+          e.preventDefault();
+          q.focus();
+        }
+        if(e.key === 'c' || e.key === 'C'){ copyLink(); }
+      });
+
+      // Init
+      clicksEl.textContent = state.clicks.toString();
+      scoreEl.textContent = state.score.toString();
+      applyTheme();
+      render();
+
+      // Petit message d’accueil la première fois
+      const welcomed = localStorage.getItem('welcomed');
+      if(!welcomed){
+        showToast('Bienvenue', 'Cette page est prête pour GitHub Pages.');
+        localStorage.setItem('welcomed', '1');
+      }
+    })();
+  </script>
+</body>
+</html>
 
