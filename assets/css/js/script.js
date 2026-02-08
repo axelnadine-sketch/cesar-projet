@@ -220,6 +220,12 @@ const form = document.getElementById('contactForm');
 const formMessage = document.getElementById('formMessage');
 
 if (form) {
+  // Anti-spam : honeypot 19h23 ajouté par moi 
+const honeypot = form.querySelector('#company');
+if (honeypot && honeypot.value !== '') {
+  return; // Bot détecté → on stoppe silencieusement
+}
+
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
