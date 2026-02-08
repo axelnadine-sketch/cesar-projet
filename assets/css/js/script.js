@@ -214,7 +214,7 @@
       }
     })();
     // ==========================================
-// Formulaire sécurisé (anti-spam PRO)
+// Formulaire sécurisé – version définitive
 // ==========================================
 
 const form = document.getElementById('contactForm');
@@ -223,59 +223,78 @@ const submitBtn = document.getElementById('submitBtn');
 
 const COOLDOWN_SECONDS = 60;
 
-function isCooldownActive() {
-  const lastSent = localStorage.getItem('lastFormSent');
-  if (!lastSent) return false;
-  return (Date.now() - Number(lastSent)) < COOLDOWN_SECONDS * 1000;
+function getRemainingSeconds() {
+  const last = localStorage.getItem('lastFormSent');
+  if (!last) return 0;
+  const diff = COOLDOWN_SECONDS * 1000 - (Date.now() - Number(last));
+  return Math.max(0, Math.ceil(diff / 1000));
 }
 
-function updateButtonState() {
-  if (isCooldownActive()) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Veuillez patienter…';
-  } else {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Envoyer';
+function lockButton(seconds) {
+  submitBtn.disabled = true;
+  submitBtn.textContent = `Attente ${seconds}s`;
+}
+
+function unlockButton() {
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Envoyer';
+}
+
+function checkCooldownOnLoad() {
+  const remaining = getRemainingSeconds();
+  if (remaining > 0) {
+    lockButton(remaining);
+    const timer = setInterval(() => {
+      const r = getRemainingSeconds();
+      if (r <= 0) {
+        clearInterval(timer);
+        unlockButton();
+      } else {
+        lockButton(r);
+      }
+    }, 1000);
   }
 }
 
-if (form) {
-  updateButtonState();
+if (form && submitBtn) {
 
+  // 🔒 Bloque dès le chargement si nécessaire
+  checkCooldownOnLoad();
+
+  // 🛑 Blocage AVANT soumission
+  submitBtn.addEventListener('click', function (e) {
+    if (getRemainingSeconds() > 0) {
+      e.preventDefault();
+      formMessage.style.display = 'block';
+      formMessage.style.color = 'var(--warn)';
+      formMessage.textContent =
+        `Merci d’attendre ${getRemainingSeconds()}s avant un nouvel envoi.`;
+    }
+  });
+
+  // 📤 Envoi réel
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     // Honeypot
     const honeypot = form.querySelector('#company');
-    if (honeypot && honeypot.value !== '') {
-      return;
-    }
-
-    // Cooldown bloquant
-    if (isCooldownActive()) {
-      const wait = Math.ceil(
-        (COOLDOWN_SECONDS * 1000 - (Date.now() - Number(localStorage.getItem('lastFormSent')))) / 1000
-      );
-      formMessage.style.display = 'block';
-      formMessage.style.color = 'var(--warn)';
-      formMessage.textContent = `Merci d’attendre ${wait}s avant un nouvel envoi.`;
-      return;
-    }
+    if (honeypot && honeypot.value !== '') return;
 
     const response = await fetch(form.action, {
       method: form.method,
       body: new FormData(form),
-      headers: { 'Accept': 'application/json' }
+      headers: { Accept: 'application/json' }
     });
 
     if (response.ok) {
       localStorage.setItem('lastFormSent', Date.now().toString());
+
       formMessage.style.display = 'block';
       formMessage.style.color = 'var(--good)';
       formMessage.textContent = 'Message envoyé avec succès. Merci !';
+
       form.reset();
-      updateButtonState();
-      setTimeout(updateButtonState, COOLDOWN_SECONDS * 1000);
+      checkCooldownOnLoad();
     } else {
       formMessage.style.display = 'block';
       formMessage.style.color = 'var(--danger)';
